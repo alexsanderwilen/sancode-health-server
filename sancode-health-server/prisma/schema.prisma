@@ -15,3 +15,69 @@ model User {
   refreshToken String?
   createdAt    DateTime @default(now())
 }
+
+model tb_pais {
+  id     Int    @id @default(autoincrement())
+  pais   String @unique @db.VarChar(50)
+  sigla  String @unique @db.VarChar(2)
+  codigo Int
+  continente String @db.VarChar(20)
+  estados tb_estado[]
+  @@index([codigo])
+  @@index([sigla])
+}
+
+model tb_regiao {
+  id     Int    @id @default(autoincrement())
+  regiao String @unique @db.VarChar(50)
+  estados tb_estado[]
+}
+
+model tb_estado {
+  id            Int      @id @default(autoincrement())
+  codigo_uf      Int
+  estado         String   @db.VarChar(50)
+  estado_oficial String   @db.VarChar(50)
+  uf             String   @db.Char(2)
+  regiao_id       Int
+  pais_id         Int
+  tb_regiao      tb_regiao @relation(fields: [regiao_id], references: [id])
+  tb_pais        tb_pais   @relation(fields: [pais_id], references: [id])  
+  municipios     tb_municipio[]
+  ceps           tb_cep[]
+  @@index([uf])
+}
+
+model tb_municipio {
+  id        Int      @id @default(autoincrement())
+  codigo    Int
+  cidade    String   @db.VarChar(60)
+  uf        String   @db.Char(2)
+  estado_id  Int
+  tb_estado tb_estado @relation(fields: [estado_id], references: [id])
+  bairros   tb_bairro[]
+  ceps      tb_cep[]
+  @@index([uf])
+}
+
+model tb_bairro {
+  id          Int      @id @default(autoincrement())
+  codigo      Int
+  bairro      String   @db.VarChar(60)
+  cidade_id   Int
+  uf          String   @db.Char(2)  
+  tb_municipio tb_municipio @relation(fields: [cidade_id], references: [id])
+}
+
+model tb_cep {
+  id          Int      @id @default(autoincrement()) // Adicionado identificador único
+  cep         String   @db.VarChar(8)
+  logradouro  String   @db.VarChar(255)
+  faixa_cep   String   @db.VarChar(255)
+  bairro      String   @db.VarChar(60)
+  cidade_id    Int
+  estado_id    Int
+  tb_municipio tb_municipio @relation(fields: [cidade_id], references: [id])
+  tb_estado    tb_estado @relation(fields: [estado_id], references: [id])
+  @@index([cep])
+}
