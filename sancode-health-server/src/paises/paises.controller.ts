@@ -1,15 +1,19 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common'; 
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common'; 
 import { PaisesService } from './paises.service';
-import { Console, log } from 'console';
+import { log } from 'console';
+import { Filter } from 'src/utils/filter.utils';
 
 @Controller('paises')
 export class PaisesController {
     constructor(private readonly paisesService: PaisesService) {}  
     
-    @Get() async findAll() { 
-        return this.paisesService.findAll();    
-    }    
-    
+    @Post()
+    async findAll(
+        @Body('filterExtra') filterExtra: Filter[] = [],
+    ) {        
+        return this.paisesService.findAll(filterExtra);
+    } 
+
     @Get(':id') async findOne(@Param('id') id: string) { 
         return this.paisesService.FindOne(+id);
     }
