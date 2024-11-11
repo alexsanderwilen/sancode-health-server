@@ -7,7 +7,7 @@ import { Filter } from 'src/utils/filter.utils';
 export class PaisesController {
     constructor(private readonly paisesService: PaisesService) {}  
     
-    @Post()
+    @Post('search')
     async findAll(
         @Body('filterExtra') filterExtra: Filter[] = [],
     ) {        
@@ -18,7 +18,8 @@ export class PaisesController {
         return this.paisesService.FindOne(+id);
     }
 
-    @Post() async create(@Body() createPaisDto: { pais: string; sigla: string; codigo: number, continente: string }) { 
+    @Post() 
+    async create(@Body() createPaisDto: { pais: string; sigla: string; codigo: number, continente: string }) { 
         log(createPaisDto);        
         return this.paisesService.create(createPaisDto); 
     }    
