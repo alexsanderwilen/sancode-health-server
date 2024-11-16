@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "postinstall": "prisma migrate deploy",
+    "vercel-build": "npx prisma migrate deploy",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
