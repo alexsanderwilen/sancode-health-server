@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { buildWhereCondition, Filter } from 'src/utils/filter.utils';
+import { buildWhereCondition, Filter } from '../utils/filter.utils';
 
 @Injectable()
 export class PaisesService {
