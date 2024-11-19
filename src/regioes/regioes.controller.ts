@@ -1,13 +1,18 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common'; 
 import { RegioesService } from './regioes.service';
+import { Filter } from 'src/utils/filter.utils';
 
 @Controller('regioes')
 export class RegioesController {
     constructor(private readonly regioesService: RegioesService) {}  
     
-    @Get() async findAll() { 
-        return this.regioesService.findAll();    
-    }    
+    @Post('search')
+    async findAll(
+        @Body('filterExtra') filterExtra: Filter[] = [],
+    ) {        
+        return this.regioesService.findAll(filterExtra);
+    } 
+ 
     
     @Get(':id') async findOne(@Param('id') id: string) { 
         return this.regioesService.FindOne(+id);
