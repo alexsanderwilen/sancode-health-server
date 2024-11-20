@@ -30,7 +30,7 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
         }
 
         switch (condicao) {
-            case 'igual':
+            case 'Igual':
               // Caso seja igual, deve comparar o tipo do campo
               if (tipo === 'number') {
                   condition = { [campo]: { equals: parseFloat(valor) } };
@@ -38,19 +38,19 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                   condition = { [campo]: { equals: valor, mode: 'insensitive'} };
               }
               break;
-            case 'diferente':
+            case 'Diferente':
                 condition = { [campo]: { not: { equals: valor } } };
                 break;
-                case 'contém':  // Adicionando a condição "contém"
+                case 'Contém':  // Adicionando a condição "contém"
                 condition = { [campo]: { contains: valor, mode: 'insensitive' } };
                 break;  
-            case 'começa com':
+            case 'Começa com':
                 condition = { [campo]: { startsWith: valor, mode: 'insensitive' } };                     
                 break;
-            case 'termina com':
+            case 'Termina com':
                 condition = { [campo]: { endsWith: valor, mode: 'insensitive' } };                            
                 break;
-            case 'maior':
+            case 'Maior':
                 if (tipo === 'number') {
                     condition = { [campo]: { gt: parseFloat(valor) } };                     
                 } else if (tipo === 'date') {
@@ -59,7 +59,7 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                     condition = { [campo]: { gt: valor } };
                 }    
                 break;
-            case 'menor':
+            case 'Menor':
                 if (tipo === 'number') {
                     condition = { [campo]: { lt: parseFloat(valor) } };                     
                 } else if (tipo === 'date') {
@@ -68,7 +68,7 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                     condition = { [campo]: { lt: valor } };
                 }    
                 break;
-            case 'igual ou maior':
+            case 'Igual ou maior':
               if (tipo === 'number') {
                 condition = { [campo]: { gte: parseFloat(valor) } };
               } else if (tipo === 'date') {
@@ -77,7 +77,7 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                 condition = { [campo]: { gte: valor } };
               }
                 break;
-            case 'igual ou menor':
+            case 'Igual ou menor':
               if (tipo === 'number') {
                 condition = { [campo]: { lte: parseFloat(valor) } };
               } else if (tipo === 'date') {
@@ -86,7 +86,7 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                 condition = { [campo]: { lte: valor } };
               }
                 break;
-            case 'entre':
+            case 'Entre':
                 if (tipo === 'number') {
                     condition = { [campo]: { gte: parseFloat(valorInicial), lte: parseFloat(valorFinal) } };
                 } else if (tipo === 'date') {
