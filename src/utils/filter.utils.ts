@@ -38,13 +38,17 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                   condition = { [campo]: { equals: valor, mode: 'insensitive'} };
               }
               break;
-            case 'Diferente':
+              case 'Diferente':
                 if (tipo === 'number') {
-                    condition = { [campo]: {  not: {equals: parseFloat(valor) } } };
-                } else {   
+                    condition = { [campo]: { not: { equals: parseFloat(valor) } } };
+                } else if (tipo === 'string') {
+                    condition = { NOT: { [campo]: { equals: valor, mode: 'insensitive' } } };
+                } else if (tipo === 'date') {
+                    condition = { [campo]: { not: new Date(valor) } };
+                } else {
                     condition = { [campo]: { not: { equals: valor } } };
                 }
-                break
+                break;
             case 'Contém':  // Adicionando a condição "contém"
                 condition = { [campo]: { contains: valor, mode: 'insensitive' } };
                 break;  
