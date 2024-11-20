@@ -39,20 +39,24 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
               }
               break;
             case 'Diferente':
-                condition = { [campo]: { not: { equals: valor } } };
-                break;
-                case 'Contém':  // Adicionando a condição "contém"
+                if (tipo === 'number') {
+                    condition = { [campo]: {  not: {equals: parseFloat(valor) } } };
+                } else {   
+                    condition = { [campo]: { not: { equals: valor } } };
+                }
+                break
+            case 'Contém':  // Adicionando a condição "contém"
                 condition = { [campo]: { contains: valor, mode: 'insensitive' } };
                 break;  
             case 'Começa com':
-                condition = { [campo]: { startsWith: valor, mode: 'insensitive' } };                     
+                condition = { [campo]: { startsWith: valor, mode: 'insensitive' } };
                 break;
             case 'Termina com':
-                condition = { [campo]: { endsWith: valor, mode: 'insensitive' } };                            
+                condition = { [campo]: { endsWith: valor, mode: 'insensitive' } };
                 break;
             case 'Maior':
                 if (tipo === 'number') {
-                    condition = { [campo]: { gt: parseFloat(valor) } };                     
+                    condition = { [campo]: { gt: parseFloat(valor) } };
                 } else if (tipo === 'date') {
                     condition = { [campo]: { gt: new Date(valor) } };
                 } else {  
@@ -61,7 +65,7 @@ export function buildWhereCondition(filters: Filter[], operador: 'AND' | 'OR' = 
                 break;
             case 'Menor':
                 if (tipo === 'number') {
-                    condition = { [campo]: { lt: parseFloat(valor) } };                     
+                    condition = { [campo]: { lt: parseFloat(valor) } };
                 } else if (tipo === 'date') {
                     condition = { [campo]: { lt: new Date(valor) } };
                 } else {  
