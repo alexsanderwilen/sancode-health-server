@@ -38,14 +38,13 @@ model tb_estado {
   codigo_uf      Int
   estado         String   @db.VarChar(50)
   estado_oficial String   @db.VarChar(50)
-  uf             String   @db.Char(2)
-  regiao_id       Int
-  pais_id         Int
+  uf             String   @db.Char(2)  @unique
+  regiao_id      Int
+  pais_id        Int
   tb_regiao      tb_regiao @relation(fields: [regiao_id], references: [id])
   tb_pais        tb_pais   @relation(fields: [pais_id], references: [id])  
   municipios     tb_municipio[]
   ceps           tb_cep[]
-  @@index([uf])
 }
 
 model tb_municipio {
