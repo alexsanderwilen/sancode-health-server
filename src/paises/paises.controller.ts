@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common'; 
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common'; 
 import { PaisesService } from './paises.service';
-import { log } from 'console';
 import { Filter } from 'src/utils/filter.utils';
 
 @Controller('paises')
@@ -14,13 +13,13 @@ export class PaisesController {
         return this.paisesService.findAll(filterExtra);
     } 
 
-    @Get(':id') async findOne(@Param('id') id: string) { 
+    @Get(':id') 
+    async findOne(@Param('id') id: string) { 
         return this.paisesService.FindOne(+id);
     }
 
     @Post() 
-    async create(@Body() createPaisDto: { pais: string; sigla: string; codigo: number, continente: string }) { 
-        log(createPaisDto);        
+    async create(@Body() createPaisDto: { pais: string; sigla: string; codigo: number, continente: string }) {         
         return this.paisesService.create(createPaisDto); 
     }    
 
@@ -32,7 +31,8 @@ export class PaisesController {
       return this.paisesService.update(+id, updatePaisDto);
     }
 
-    @Delete(':id') async remove(@Param('id') id: string) {
+    @Delete(':id') 
+    async remove(@Param('id') id: string) {
         return this.paisesService.delete(+id);
     }
 }
