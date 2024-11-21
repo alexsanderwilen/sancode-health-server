@@ -27,9 +27,9 @@ export class EstadosService {
                 estadoOficial: estado.estado_oficial,
                 uf: estado.uf,
                 regiaoId: estado.regiao_id,
+                regiao: estado.tb_regiao?.regiao,
                 paisId: estado.pais_id,
-                regiao: estado.tb_regiao?.regiao, // Alias para tb_regiao.regiao
-                pais: estado.tb_pais?.pais,      // Alias para tb_pais.pais
+                pais: estado.tb_pais?.pais,
             }));
     
             return { data };
@@ -59,8 +59,8 @@ export class EstadosService {
             estadoOficial: estado.estado_oficial,
             uf: estado.uf,
             regiaoId: estado.regiao_id,
-            paisId: estado.pais_id,
             regiao: estado.tb_regiao?.regiao,
+            paisId: estado.pais_id,
             pais: estado.tb_pais?.pais,
         };
     }
@@ -88,9 +88,9 @@ export class EstadosService {
             estadoOficial: estado.estado_oficial,
             uf: estado.uf,
             regiaoId: estado.regiao_id,
+            regiao: estado.tb_regiao?.regiao,
             paisId: estado.pais_id,
-            regiao: estado.tb_regiao?.regiao, // Alias para tb_regiao.regiao
-            pais: estado.tb_pais?.pais,      // Alias para tb_pais.pais
+            pais: estado.tb_pais?.pais,
         };
     }
       
