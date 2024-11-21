@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common'; 
 import { Filter } from 'src/utils/filter.utils';
 import { EstadosService } from './estados.service';
+import { clear } from 'console';
 
 @Controller('estados')
 export class EstadosController {
@@ -15,7 +16,7 @@ export class EstadosController {
 
     @Get(':id') 
     async findOne(@Param('id') id: string) { 
-        return this.estadosService.FindOne(+id);
+        return this.estadosService.findOne(+id);
     }
     
     @Get('uf/:uf')
