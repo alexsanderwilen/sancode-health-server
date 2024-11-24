@@ -9,18 +9,27 @@ export class MunicipiosService {
     async findAll(filtroExtra: Filter[]) {
         try {
             const where = buildWhereCondition(filtroExtra);
-            const [data] = await Promise.all([
-                this.prisma.tb_municipio.findMany({
-                    orderBy: { cidade: 'asc' },
-                    where
-                })
-            ]);
-
-            return {
-                data,
-            };
+    
+            const municipios = await this.prisma.tb_municipio.findMany({
+                orderBy: { cidade: 'asc' },
+                where,
+                include: {
+                    tb_estado: { select: { estado: true } }, // Inclui somente o campo necessário                    
+                },
+            });
+                
+            const data = municipios.map((municipio) => ({
+                id: municipio.id,
+                codigo: municipio.codigo,
+                cidade: municipio.cidade,
+                estadoId: municipio.estado_id,
+                estado: municipio.tb_estado?.estado,
+                uf: municipio.uf,                
+            }));
+    
+            return { data };
         } catch (error) {
-            console.error('Erro ao buscar municípios:', error);
+            console.error('Erro ao buscar estados:', error);
             throw error;
         }
     }
