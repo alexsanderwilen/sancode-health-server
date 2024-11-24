@@ -35,15 +35,63 @@ export class MunicipiosService {
     }
 
     async FindOne(id: number) {
-        return this.prisma.tb_municipio.findUnique({ where: { id } });
+        const municipio = await this.prisma.tb_municipio.findUnique({
+            where: { id },
+            include: {
+                tb_estado: { select: { estado: true } },                
+            },
+        });
+    
+        if (!municipio) {
+            throw new Error(`Município com ID ${id} não encontrado.`);
+        }
+    
+        return {
+            id: municipio.id,
+            codigo: municipio.codigo,            
+            cidade: municipio.cidade,
+            estadoId: municipio.estado_id,
+            estado: municipio.tb_estado?.estado,
+            uf: municipio.uf,
+        };
     }
 
     async findByUf(uf: string) {
-        return this.prisma.tb_municipio.findMany({ where: { uf } });
+        const ufUpperCase = uf.toUpperCase();
+    
+        const municipios = await this.prisma.tb_municipio.findMany({
+            where: { uf: ufUpperCase },
+            include: {
+                tb_estado: { select: { estado: true } },                 
+            },
+        });
+    
+        if (!municipios) {
+            throw new Error(`Município com UF ${uf} não encontrado.`);
+        }
+
+        return municipios.map((municipio) => {
+            return {
+                id: municipio.id,
+                cidade: municipio.cidade,
+                codigo: municipio.codigo,
+                estadoID: municipio.estado_id,
+                estado: municipio.tb_estado?.estado,
+                uf: municipio.uf,
+            };    
+        });
     }
 
     async create(data: { codigo: number; cidade: string; uf: string; estado_id: number }) {
-        return this.prisma.tb_municipio.create({ data });
+        
+        const estado = await this.prisma.tb_estado.findUnique({ where: { id: data.estado_id } });
+        if (!estado) {
+            throw new Error(`Estado com ID ${data.estado_id} não encontrado.`);
+        }
+                
+        return this.prisma.tb_municipio.create({
+            data,
+        });        
     }
 
     async update(id: number, updateData: Partial<{ codigo: number; cidade: string; uf: string; estado_id: number }>) {
