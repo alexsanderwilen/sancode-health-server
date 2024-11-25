@@ -14,7 +14,7 @@ export class MunicipiosService {
                 orderBy: { cidade: 'asc' },
                 where,
                 include: {
-                    tb_estado: { select: { estado: true } }, // Inclui somente o campo necessário                    
+                    tb_estado: { select: { estado: true, uf: true } },
                 },
             });
                 
@@ -24,7 +24,7 @@ export class MunicipiosService {
                 cidade: municipio.cidade,
                 estadoId: municipio.estado_id,
                 estado: municipio.tb_estado?.estado,
-                uf: municipio.uf,                
+                uf: municipio.tb_estado?.uf,
             }));
     
             return { data };
@@ -38,7 +38,7 @@ export class MunicipiosService {
         const municipio = await this.prisma.tb_municipio.findUnique({
             where: { id },
             include: {
-                tb_estado: { select: { estado: true } },                
+                tb_estado: { select: { estado: true, uf: true } },                
             },
         });
     
@@ -52,7 +52,7 @@ export class MunicipiosService {
             cidade: municipio.cidade,
             estadoId: municipio.estado_id,
             estado: municipio.tb_estado?.estado,
-            uf: municipio.uf,
+            uf: municipio.tb_estado?.uf,
         };
     }
 
@@ -62,7 +62,7 @@ export class MunicipiosService {
         const municipios = await this.prisma.tb_municipio.findMany({
             where: { uf: ufUpperCase },
             include: {
-                tb_estado: { select: { estado: true } },                 
+                tb_estado: { select: { estado: true, uf: true } },
             },
         });
     
@@ -77,7 +77,7 @@ export class MunicipiosService {
                 codigo: municipio.codigo,
                 estadoID: municipio.estado_id,
                 estado: municipio.tb_estado?.estado,
-                uf: municipio.uf,
+                uf: municipio.tb_estado?.uf,
             };    
         });
     }
@@ -89,16 +89,47 @@ export class MunicipiosService {
             throw new Error(`Estado com ID ${data.estado_id} não encontrado.`);
         }
                 
-        return this.prisma.tb_municipio.create({
+        const municipio = await this.prisma.tb_municipio.create({
             data,
-        });        
+            include: {
+                tb_estado: { select: { estado: true, uf: true } },
+            },
+        });     
+        
+        return {
+            id: municipio.id,
+            cidade: municipio.cidade,
+            codigo: municipio.codigo,
+            estadoID: municipio.estado_id,
+            estado: municipio.tb_estado?.estado,
+            uf: municipio.tb_estado?.uf,
+        };      
     }
 
     async update(id: number, updateData: Partial<{ codigo: number; cidade: string; uf: string; estado_id: number }>) {
-        return this.prisma.tb_municipio.update({
+        if (updateData.estado_id) {
+            const estado = await this.prisma.tb_estado.findUnique({ where: { id: updateData.estado_id } });
+            if (!estado) {
+                throw new Error(`Estado com ID ${updateData.estado_id} não encontrado.`);
+            }
+        }
+    
+        const municipio = await this.prisma.tb_municipio.update({
             where: { id },
-            data: updateData
+            data: updateData,
+            include: {
+                tb_estado: { select: { estado: true, uf: true } },
+            }
         });
+    
+        return {
+            id: municipio.id,
+            cidade: municipio.cidade,
+            codigo: municipio.codigo,
+            estadoID: municipio.estado_id,
+            estado: municipio.tb_estado?.estado,
+            uf: municipio.tb_estado?.uf,
+        };
     }
 
     async delete(id: number) {
