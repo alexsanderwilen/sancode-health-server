@@ -108,25 +108,9 @@ export class EstadosService {
         }
     
         // Cria o estado
-        const estado = await this.prisma.tb_estado.create({
+        return this.prisma.tb_estado.create({
             data,
-            include: {
-                tb_regiao: { select: { regiao: true } },
-                tb_pais: { select: { pais: true } },
-            },
-        });
-                       
-        return {
-            id: estado.id,
-            codigoUf: estado.codigo_uf,
-            estado: estado.estado,
-            estadoOficial: estado.estado_oficial,
-            uf: estado.uf,
-            regiaoId: estado.regiao_id,
-            regiao: estado.tb_regiao?.regiao,
-            paisId: estado.pais_id,
-            pais: estado.tb_pais?.pais,
-        };
+        });                            
     }
     
 
