@@ -95,9 +95,7 @@ export class EstadosService {
       
 
     async create(data: { codigo_uf: number; estado: string; estado_oficial: string; uf: string; regiao_id: number; pais_id: number }) {
-        return this.prisma.tb_estado.create({
-            data,
-        });                            
+        return this.prisma.tb_estado.create({ data }); 
     }
     
 
