@@ -95,19 +95,6 @@ export class EstadosService {
       
 
     async create(data: { codigo_uf: number; estado: string; estado_oficial: string; uf: string; regiao_id: number; pais_id: number }) {
-        // Valida se o regiao_id existe
-        const regiao = await this.prisma.tb_regiao.findUnique({ where: { id: data.regiao_id } });
-        if (!regiao) {
-            throw new Error(`Região com ID ${data.regiao_id} não encontrada.`);
-        }
-    
-        // Valida se o pais_id existe
-        const pais = await this.prisma.tb_pais.findUnique({ where: { id: data.pais_id } });
-        if (!pais) {
-            throw new Error(`País com ID ${data.pais_id} não encontrado.`);
-        }
-    
-        // Cria o estado
         return this.prisma.tb_estado.create({
             data,
         });                            
