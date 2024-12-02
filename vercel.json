@@ -16,7 +16,8 @@
         "PUT",
         "DELETE",
         "PATCH",
-        "OPTIONS"
+        "OPTIONS",
+        "HEAD"
       ]
     }
   ]
