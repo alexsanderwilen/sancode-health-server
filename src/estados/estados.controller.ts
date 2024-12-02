@@ -25,7 +25,7 @@ export class EstadosController {
     }
 
     @Post()
-    async create(@Body() createEstadoDto: { codigo_uf: number; estado: string; estado_oficial: string; uf: string; regiao_id: number; pais_id: number }) { 
+    async create(@Body() createEstadoDto: { codigoUf: number; estado: string; estadoOficial: string; uf: string; regiaoId: number; paisId: number }) { 
         return this.estadosService.create(createEstadoDto); 
     }
 
