@@ -32,7 +32,7 @@ export class EstadosController {
     @Patch(':id')
     async update(
       @Param('id') id: string,
-      @Body() updateEstadoDto: Partial<{ estado: string; sigla: string; codigo: number; pais: number }>
+      @Body() updateEstadoDto: Partial<{ ecodigoUf: number; estado: string; estadoOficial: string; uf: string; regiaoId: number; paisId: number }>
     ) { 
       return this.estadosService.update(+id, updateEstadoDto);
     }

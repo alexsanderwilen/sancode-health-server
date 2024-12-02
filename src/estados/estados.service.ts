@@ -71,8 +71,8 @@ export class EstadosService {
         const estado = await this.prisma.tb_estado.findUnique({
             where: { uf: ufUpperCase },
             include: {
-                tb_regiao: { select: { regiao: true } }, // Inclui a descrição da região
-                tb_pais: { select: { pais: true } },    // Inclui a descrição do país
+                tb_regiao: { select: { regiao: true } },
+                tb_pais: { select: { pais: true } },
             },
         });
 
@@ -95,43 +95,110 @@ export class EstadosService {
 
 
     async create(data: { codigoUf: number; estado: string; estadoOficial: string; uf: string; regiaoId: number; paisId: number }) {
-        return this.prisma.tb_estado.create({
-            data: {
-                codigo_uf: data.codigoUf,
-                estado: data.estado,
-                estado_oficial: data.estadoOficial,
-                uf: data.uf,
-                regiao_id: data.regiaoId,
-                pais_id: data.paisId,
+        const estado = await this.prisma.tb_estado.create({
+          data: {
+            codigo_uf: data.codigoUf,
+            estado: data.estado,
+            estado_oficial: data.estadoOficial,
+            uf: data.uf,
+            regiao_id: data.regiaoId,
+            pais_id: data.paisId,
+          },
+          select: {
+            id: true,
+            codigo_uf: true,
+            estado: true,
+            estado_oficial: true,
+            uf: true,
+            regiao_id: true,
+            pais_id: true,
+            tb_regiao: {
+              select: { regiao: true },
             },
+            tb_pais: {
+              select: { pais: true },
+            },
+          },
         });
-    }
+              
+        return {
+          id: estado.id,
+          codigo_uf: estado.codigo_uf,
+          estado: estado.estado,
+          estado_oficial: estado.estado_oficial,
+          uf: estado.uf,
+          regiao_id: estado.regiao_id,
+          regiao: estado.tb_regiao.regiao, 
+          pais_id: estado.pais_id,
+          pais: estado.tb_pais.pais, 
+        };
+      }
 
+      async update(
+        id: number,
+        updateData: Partial<{ codigoUf: number; estado: string; estadoOficial: string; uf: string; regiaoId: number; paisId: number }>
+      ) {
+        try {
+          const { regiaoId, paisId, ...fieldsToUpdate } = updateData;
 
-    async update(id: number, updateData: Partial<{ codigo_uf: number; estado: string; estado_oficial: string; uf: string; regiao_id: number; pais_id: number }>) {
-        // Verifica se regiao_id está no updateData e valida se existe
-        if (updateData.regiao_id) {
-            const regiao = await this.prisma.tb_regiao.findUnique({ where: { id: updateData.regiao_id } });
-            if (!regiao) {
-                throw new Error(`Região com ID ${updateData.regiao_id} não encontrada.`);
-            }
-        }
-
-        // Verifica se pais_id está no updateData e valida se existe
-        if (updateData.pais_id) {
-            const pais = await this.prisma.tb_pais.findUnique({ where: { id: updateData.pais_id } });
-            if (!pais) {
-                throw new Error(`País com ID ${updateData.pais_id} não encontrado.`);
-            }
-        }
-
-        // Atualiza o estado
-        return this.prisma.tb_estado.update({
+          const validations = await Promise.all([
+            regiaoId ? this.prisma.tb_regiao.findUnique({ where: { id: regiaoId } }) : null,
+            paisId ? this.prisma.tb_pais.findUnique({ where: { id: paisId } }) : null
+          ]);
+      
+          if (regiaoId && !validations[0]) {
+            throw new Error(`Região com ID ${regiaoId} não encontrada.`);
+          }
+      
+          if (paisId && !validations[1]) {
+            throw new Error(`País com ID ${paisId} não encontrado.`);
+          }          
+      
+          const updateFields = {} as any;
+          if (updateData.codigoUf !== undefined) updateFields.codigo_uf = updateData.codigoUf;
+          if (updateData.estado !== undefined) updateFields.estado = updateData.estado;
+          if (updateData.estadoOficial !== undefined) updateFields.estado_oficial = updateData.estadoOficial;
+          if (updateData.uf !== undefined) updateFields.uf = updateData.uf;
+          if (updateData.regiaoId !== undefined) updateFields.regiao_id = updateData.regiaoId;
+          if (updateData.paisId !== undefined) updateFields.pais_id = updateData.paisId;
+      
+          const updatedEstado = await this.prisma.tb_estado.update({
             where: { id },
-            data: updateData,
-        });
-    }
-
+            data: updateFields,
+            select: {
+              id: true,
+              codigo_uf: true,
+              estado: true,
+              estado_oficial: true,
+              uf: true,
+              regiao_id: true,
+              pais_id: true,
+              tb_regiao: {
+                select: { regiao: true },
+              },
+              tb_pais: {
+                select: { pais: true },
+              },
+            },
+          });
+      
+          return {
+            id: updatedEstado.id,
+            codigo_uf: updatedEstado.codigo_uf,
+            estado: updatedEstado.estado,
+            estado_oficial: updatedEstado.estado_oficial,
+            uf: updatedEstado.uf,
+            regiao_id: updatedEstado.regiao_id,
+            regiao: updatedEstado.tb_regiao?.regiao,
+            pais_id: updatedEstado.pais_id,
+            pais: updatedEstado.tb_pais?.pais,
+          };
+        } catch (error) {
+          console.error('Erro ao atualizar estado:', error);
+          throw new Error('Erro interno do servidor');
+        }
+      }
+   
     async delete(id: number) {
         return this.prisma.tb_estado.delete({ where: { id } });
     }
