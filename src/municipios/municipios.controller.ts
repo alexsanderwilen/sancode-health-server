@@ -24,14 +24,14 @@ export class MunicipiosController {
     }
     
     @Post()
-    async create(@Body() createMunicipioDto: { codigo: number; cidade: string; uf: string; estado_id: number }) {
+    async create(@Body() createMunicipioDto: { codigo: number; cidade: string; uf: string; estadoId: number }) {
         return this.municipiosService.create(createMunicipioDto);
     }
 
     @Patch(':id')
     async update(
       @Param('id') id: string,
-      @Body() updateMunicipioDto: Partial<{ codigo: number; cidade: string; uf: string; estado_id: number }>
+      @Body() updateMunicipioDto: Partial<{ codigo: number; cidade: string; uf: string; estadoId: number }>
     ) {
       return this.municipiosService.update(+id, updateMunicipioDto);
     }

@@ -82,17 +82,31 @@ export class MunicipiosService {
         });
     }
 
-    async create(data: { codigo: number; cidade: string; uf: string; estado_id: number }) {
+    async create(data: { codigo: number; cidade: string; uf: string; estadoId: number }) {
         
-        const estado = await this.prisma.tb_estado.findUnique({ where: { id: data.estado_id } });
+        const estado = await this.prisma.tb_estado.findUnique({ where: { id: data.estadoId } });
         if (!estado) {
-            throw new Error(`Estado com ID ${data.estado_id} não encontrado.`);
+            throw new Error(`Estado com ID ${data.estadoId} não encontrado.`);
         }
                 
         const municipio = await this.prisma.tb_municipio.create({
-            data,
-            include: {
-                tb_estado: { select: { estado: true, uf: true } },
+            data:{
+                codigo: data.codigo,
+                cidade: data.cidade,
+                uf: data.uf,
+                estado_id: data.estadoId,
+            },
+            select: {
+                id: true,
+                codigo: true,
+                cidade: true,
+                estado_id: true,
+                tb_estado: { 
+                    select: { 
+                        estado: true, 
+                        uf: true 
+                    } 
+                },
             },
         });     
         
@@ -106,30 +120,54 @@ export class MunicipiosService {
         };      
     }
 
-    async update(id: number, updateData: Partial<{ codigo: number; cidade: string; uf: string; estado_id: number }>) {
-        if (updateData.estado_id) {
-            const estado = await this.prisma.tb_estado.findUnique({ where: { id: updateData.estado_id } });
-            if (!estado) {
-                throw new Error(`Estado com ID ${updateData.estado_id} não encontrado.`);
+    async update(id: number, updateData: Partial<{ codigo: number; cidade: string; uf: string; estadoId: number }>) {
+        try {
+            const {estadoId, ...fieldsToUpdate} = updateData;
+
+            const validations = await Promise.all([
+                estadoId ? this.prisma.tb_estado.findUnique({ where: { id: estadoId } }) : Promise.resolve(null),
+            ]);
+
+            if (estadoId && !validations[0]) {
+                throw new Error(`Estado com ID ${estadoId} não encontrado.`);
             }
+            
+            const updateFields = {} as any;
+            if (updateData.codigo !== undefined) updateFields.codigo = updateData.codigo;
+            if (updateData.cidade !== undefined) updateFields.cidade = updateData.cidade;
+            if (updateData.uf !== undefined) updateFields.uf = updateData.uf;
+            if (updateData.estadoId !== undefined) updateFields.estado_id = updateData.estadoId;
+
+            const municipio = await this.prisma.tb_municipio.update({
+                where: { id },
+                data: updateFields,
+                select: {
+                    id: true,
+                    codigo: true,
+                    cidade: true,
+                    estado_id: true,
+                    tb_estado: { 
+                        select: { 
+                            estado: true, 
+                            uf: true 
+                        } 
+                    },
+                },
+            });
+
+            return {
+                id: municipio.id,
+                cidade: municipio.cidade,
+                codigo: municipio.codigo,
+                estadoID: municipio.estado_id,
+                estado: municipio.tb_estado?.estado,
+                uf: municipio.tb_estado?.uf,
+            };
+
+        } catch (error) {
+            console.error('Erro ao atualizar município:', error);
+            throw new Error('Erro interno do servidor');
         }
-    
-        const municipio = await this.prisma.tb_municipio.update({
-            where: { id },
-            data: updateData,
-            include: {
-                tb_estado: { select: { estado: true, uf: true } },
-            }
-        });
-    
-        return {
-            id: municipio.id,
-            cidade: municipio.cidade,
-            codigo: municipio.codigo,
-            estadoID: municipio.estado_id,
-            estado: municipio.tb_estado?.estado,
-            uf: municipio.tb_estado?.uf,
-        };
     }
 
     async delete(id: number) {
